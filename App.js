@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useCallback } from "react";
 import { useFonts } from "expo-font";
 import {
   StyleSheet,
@@ -13,19 +13,26 @@ import {
 } from "react-native";
 
 export default function App() {
-  const [loaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     InterBold: require("./assets/fonts/Inter-Bold.ttf"),
     InterMedium: require("./assets/fonts/Inter-Medium.ttf"),
     InterRegular: require("./assets/fonts/Inter-Regular.ttf"),
     InterSemiBold: require("./assets/fonts/Inter-SemiBold.ttf"),
   });
-  // if (!loaded) {
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  // if (!fontsLoaded) {
   //   return null;
   // }
+
   const [text, onChangeText] = React.useState("");
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayoutRootView}>
       <StatusBar style="auto" />
       <ScrollView>
         <View style={styles.subScrollView}>
@@ -34,7 +41,13 @@ export default function App() {
               style={styles.logo}
               source={require("./assets/images/logo.png")}
             />
-            <Button title="Contact Us" color={"#000"} />
+            <View style={styles.button}>
+              <Text style={{ color: "white", fontSize: 12 }}>Contact Us</Text>
+              <Image
+                source={require("./assets/images/contact-icon.png")}
+                style={{ height: 10, width: 10, marginLeft: 5 }}
+              />
+            </View>
           </View>
           <View style={styles.commingSoon}>
             <Text style={{ fontFamily: "InterSemiBold", fontSize: 12 }}>
@@ -143,6 +156,15 @@ const styles = StyleSheet.create({
     height: 32,
     resizeMode: "contain",
   },
+  button: {
+    width: 100,
+    height: 36,
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 5,
+    backgroundColor: "black",
+  },
   commingSoon: {
     marginTop: 50,
     display: "flex",
@@ -195,7 +217,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 100,
     backgroundColor: "black",
-    color: "white",
   },
   socialMediaContainer: {
     flexDirection: "row",
